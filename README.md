@@ -25,6 +25,8 @@ sempra contains a bank of 16 sequences. the 2 identical tracks run in parallel, 
 * * hold: holds / ties the gate for the duration of the step.
 * the 16n fader above sets the pitch for that step.
 
+## keys and encoders
+
 * k1: shift key
 * k2: enter selection mode for track 1
 * k3: enter selection mode for track 2
