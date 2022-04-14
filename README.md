@@ -53,3 +53,10 @@ each track has a few params in the norns menu that you can't access from the mai
 
 * transpose: transpose the track (not phrase) by x semitones.
 * output: sets the track output. sempra currently supports crow, w/syn, just friends and midi gear. you can also route a track to transpose another.
+
+# roadmap
+* implement midi out
+* quantization
+* track transpose other track
+* crow envelope outs
+* copy and paste sequences
