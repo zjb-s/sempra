@@ -3,7 +3,8 @@ dynamic melody sequencer
 
 ![Untitled_Artwork](https://user-images.githubusercontent.com/86270534/163466922-d158e6ea-3f9e-4987-bccf-c313ad90263d.png)
 
-![sempra](https://user-images.githubusercontent.com/86270534/163466955-05e89d2e-27a0-4a93-86df-14435c745cc3.png)
+![sempra 2](https://user-images.githubusercontent.com/86270534/163468550-ff110ad5-9edb-42d2-a742-12d328363ed5.png)
+
 
 # what?
 
