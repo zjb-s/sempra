@@ -75,3 +75,4 @@ each track has a few params in the norns menu that you can't access from the mai
 * clock multiplication
 * phrase switch quantization
 * slides
+* save sequences
