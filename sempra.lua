@@ -127,7 +127,7 @@ function enc(n,d)
 	grid_dirty = true
 	local t = n-1
 	if		n == 1 then
-		params:delta('gate_len_'..shift and 1 or 2)
+		params:delta('gate_len_'..(shift and 1 or 2), d)
 	elseif	in_range(n,2,3) then
 		if shift then
 			params:delta('division_'..t,d)
