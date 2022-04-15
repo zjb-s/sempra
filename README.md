@@ -30,18 +30,23 @@ sempra contains a bank of 16 phrases. the 2 identical tracks run in parallel, ea
 
 ## keys and encoders
 
-![Untitled_Artwork](https://user-images.githubusercontent.com/86270534/163466922-d158e6ea-3f9e-4987-bccf-c313ad90263d.png)
+![Untitled_Artwork 6](https://user-images.githubusercontent.com/86270534/163586984-978d713b-b27f-455e-941c-e11c6510811b.png)
 
 * k1: shift key
 * k2: enter selection mode for track 1
 * k3: enter selection mode for track 2
 * enc1: gate length for track 1
-* shift + enc1: gate length for track 2
 * enc2: change phrase length for track 1
-* shift + enc2: change clock division for track 1
 * enc3: change phrase lenth for track 2
-* * shift + enc3: change clock division for track 2
 * enc4 (fates only): gate length for track 2
+
+## shift functions
+
+![Untitled_Artwork 5](https://user-images.githubusercontent.com/86270534/163586775-3a537fde-2155-4f45-90dd-2deb88451ed7.png)
+
+* enc1: gate length for track 2 (for 3-encoder norns)
+* enc2: time division for track 1
+* enc3: time division for track 2
 
 ## selecting phrases
 
