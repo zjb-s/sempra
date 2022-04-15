@@ -10,7 +10,7 @@ shift = false
 tracks = {}
 sequences = {}
 faders = {}
-gate_len = 0.01
+
 
 function init() 
 	param_initalizer.go()
@@ -44,7 +44,7 @@ function in_range(n, min, max)
 	end
 end
 
-function play_note(note,out,trigmode)
+function play_note(note,out,trigmode,len)
 	note = note / 12
 	local velocity = 10
 	if 		out <= 16 then -- midi out
@@ -62,7 +62,7 @@ function play_note(note,out,trigmode)
 		local cv_channel = out==29 and 1 or 3
 		crow.output[cv_channel].volts = note
 		crow.output[cv_channel+1].volts = 10
-		clock.sleep(gate_len)
+		clock.sleep(len/1000)
 		if (trigmode ~= 4) then crow.output[cv_channel+1].volts = 0 end
 	end
 end
@@ -103,10 +103,11 @@ function stepper()
 					note = note + params:get('transpose_'..t)
 					note = util.linlin(0, 127, 0, params:get('range_'..t), note)
 					note = mu.snap_note_to_array(note,mu.generate_scale(params:get('root_'..t),params:get('scale_'..t),10))
-					
+
 					local out = params:get('output_'..t)
 					local trigmode = as(t).trig_modes[params:get('pos_'..t)]
-					clock.run(play_note,note,out,trigmode)
+					local len = params:get('gate_len_'..t)
+					clock.run(play_note,note,out,trigmode,len)
 				end
 			end
 		end
@@ -131,12 +132,16 @@ function enc(n,d)
 	screen_dirty = true
 	grid_dirty = true
 	local t = n-1
-	if in_range(n,2,3) then
+	if		n == 1 then
+		params:delta('gate_len_'..shift and 1 or 2)
+	elseif	in_range(n,2,3) then
 		if shift then
 			params:delta('division_'..t,d)
 		else
 			as(t).len = util.clamp(as(t).len + d,1,8)
 		end
+	elseif	n == 4 then
+		params:delta('gate_len_2')
 	end
 end
 
