@@ -41,20 +41,24 @@ function in_range(n, min, max)
 end
 
 function play_note(note,out,trigmode,len)
+	-- todo implement note duration for ii voices
 	note = note / 12
 	local velocity = 10
 	if 		out <= 16 then -- midi out
 		-- todo implement midi out
 	elseif	in_range(out,17,20) then 				-- wsyn mono
-		crow.ii.wsyn.vox(out-16,note,velocity)
+		crow.ii.wsyn.ar_mode(1)
+		crow.ii.wsyn.play_voice(out-16,note,velocity)
 	elseif 	out == 21 then 							-- wsyn poly
-		crow.ii.wsyn.note(note,velocity)
+		crow.ii.wsyn.ar_mode(1)
+		crow.ii.wsyn.play_note(note,velocity)
 	elseif	in_range(out,22,27) then				-- jf mono
-		crow.ii.jf.vox(out-21,note,velocity)
+		crow.ii.jf.mode(1)
+		crow.ii.jf.play_voice(out-21,note,velocity)
 	elseif	out == 28 then							-- jf poly
-		crow.ii.jf.note(note,velocity)
+		crow.ii.jf.mode(1) 
+		crow.ii.jf.play_note(note,velocity)
 	elseif	in_range(out,29,30) then				-- crow cv/gate
-		-- print('crow out')
 		local cv_channel = out==29 and 1 or 3
 		crow.output[cv_channel].volts = note
 		crow.output[cv_channel+1].volts = 10
@@ -127,7 +131,7 @@ function enc(n,d)
 	grid_dirty = true
 	local t = n-1
 	if		n == 1 then
-		params:delta('gate_len_'..(shift and 1 or 2), d)
+		params:delta('gate_len_'..(shift and 2 or 1), d)
 	elseif	in_range(n,2,3) then
 		if shift then
 			params:delta('division_'..t,d)
@@ -135,7 +139,7 @@ function enc(n,d)
 			as(t).len = util.clamp(as(t).len + d,1,8)
 		end
 	elseif	n == 4 then
-		params:delta('gate_len_2')
+		params:delta('gate_len_2',d)
 	end
 end
 
