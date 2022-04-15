@@ -1,8 +1,6 @@
 # sempra
 dynamic melody sequencer
 
-![Untitled_Artwork](https://user-images.githubusercontent.com/86270534/163466922-d158e6ea-3f9e-4987-bccf-c313ad90263d.png)
-
 ![sempra 2](https://user-images.githubusercontent.com/86270534/163468550-ff110ad5-9edb-42d2-a742-12d328363ed5.png)
 
 
@@ -18,6 +16,9 @@ sempra contains a bank of 16 phrases. the 2 identical tracks run in parallel, ea
 
 ## grid and 16n
 
+![Untitled_Artwork 2](https://user-images.githubusercontent.com/86270534/163574156-d6be6215-b607-48e5-a887-7e23f5bdd8f9.png)
+
+
 * place your 16n directly above the grid, so each fader lines up with a grid column.
 * the top half of the grid controls step duration, from 1 to 4 ticks per step.
 * the bottom half of the grid controls step trigger behavior. from the bottom up:
@@ -28,6 +29,8 @@ sempra contains a bank of 16 phrases. the 2 identical tracks run in parallel, ea
 * the 16n fader above sets the pitch for that step.
 
 ## keys and encoders
+
+![Untitled_Artwork](https://user-images.githubusercontent.com/86270534/163466922-d158e6ea-3f9e-4987-bccf-c313ad90263d.png)
 
 * k1: shift key
 * k2: enter selection mode for track 1
