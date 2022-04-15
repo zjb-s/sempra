@@ -10,7 +10,7 @@ dynamic melody sequencer
 
 a dynamic melody sequencer for norns, 16n and a varibright grid 128. there is no engine built in - to hear sound, connect norns to midi, crow, w/syn and/or just friends.
 
-two sequencers run in parallel, each with up to 8 steps. swap out phrases from a shared bank on the fly, edit durations and repeats per step, combine sequences together for awake-style phasing.
+two sequencers run in parallel, each with up to 8 steps. swap out phrases from a shared bank on the fly, edit durations and repeats per step, combine sequences together in modular for awake-style phasing.
 
 # how do i use this?
 
