@@ -76,3 +76,4 @@ each track has a few params in the norns menu that you can't access from the mai
 * phrase switch quantization
 * slides
 * save sequences
+* arc support
