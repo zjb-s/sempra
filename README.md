@@ -52,7 +52,7 @@ phrase are selected immediately when you press them. all changes to the previous
 each track has a few params in the norns menu that you can't access from the main interface.
 
 * transpose: transpose the track (not phrase) by x semitones.
-* output: sets the track output. sempra currently supports crow, w/syn, just friends and midi gear. you can also route a track to transpose another.
+* output: sets the track output. sempra currently supports crow, w/syn, just friends and midi gear. you can also route a track to transpose another. (not implemented)
 
 # roadmap
 * implement midi out
