@@ -56,7 +56,8 @@ each track has a few params in the norns menu that you can't access from the mai
 
 # roadmap
 * implement midi out
-* quantization
 * track transpose other track
 * crow envelope outs
 * copy and paste sequences
+* clock multiplication
+* phrase switch quantization
