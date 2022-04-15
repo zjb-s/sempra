@@ -44,6 +44,10 @@ sempra contains a bank of 16 phrases. the 2 identical tracks run in parallel, ea
 * enc4 (fates only): gate length for track 2
 
 ## selecting phrases
+
+![Untitled_Artwork 3](https://user-images.githubusercontent.com/86270534/163580612-ac021183-de85-4122-a99d-84057d87276e.png)
+
+
 pressing k2 or k3 opens the selector pane for tracks 1 and 2 respectively. in this mode, the opposite track is covered up by a 4x4 grid of phrases to choose from. pressing any phrase assigns it to the track. when you do, the selector pane will disappear again.
 
 * to latch the selector pane, hold shift while selecting a phrase. press k2/k3 to unlatch.
