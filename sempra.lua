@@ -1,7 +1,7 @@
 g = grid.connect()
 param_initalizer = include('lib/params')
 render = include('lib/render')
-faderbank = midi.connect()
+_16n = include("lib/_16n")
 function g.add() grid_dirty = true end
 
 grid_dirty = true
@@ -12,14 +12,10 @@ sequences = {}
 faders = {}
 
 
-function init() 
+function init()
 	param_initalizer.go()
-	for k,v in pairs(midi.devices) do
-		if v.name == '16n' then
-			faderbank = v
-			break
-		end
-	end
+        _16n.init(faderbank_event)
+
     for i=1,16 do
 		table.insert(sequences, {
 			vals = {64,64,64,64,64,64,64,64}
@@ -36,9 +32,9 @@ function as(n)
 	return sequences[params:get('as_'..util.clamp(n,1,2))]
 end -- "active sequence" getter sugar
 
-function in_range(n, min, max) 
-	if n >= min and n <= max then 
-		return true 
+function in_range(n, min, max)
+	if n >= min and n <= max then
+		return true
 	else
 		return false
 	end
@@ -76,7 +72,7 @@ function redraw_timer()
     end
 end
 
-function redraw() render.screen({as(1),as(2)},tracks) end 
+function redraw() render.screen({as(1),as(2)},tracks) end
 -- redraw() namespace is treated specially by norns, this makes it pause when the menu is open etc
 
 function stepper()
@@ -86,7 +82,7 @@ function stepper()
         grid_dirty = true
 		screen_dirty = true
 		for t=1,2 do
-			if math.abs(params:get('division_'..t)) > params:get('clock_counter_'..t) then 
+			if math.abs(params:get('division_'..t)) > params:get('clock_counter_'..t) then
 				params:delta('clock_counter_'..t,1)
 			else
 				params:set('clock_counter_'..t,1)
@@ -114,26 +110,24 @@ function stepper()
     end
 end
 
-function faderbank.event(data)
+function faderbank_event(d)
 	screen_dirty = true
-    local d = midi.to_msg(data)
+    local slider_id = _16n.cc_2_slider_id(d.cc)
 	local seqnum; local mod
-    if d.type == 'cc' then
-		if d.cc <= 8 then
-			seqnum = 1; mod = 0
-		else
-			seqnum = 2; mod = -8
-		end
-        as(seqnum).vals[d.cc+mod] = d.val
-    end
+	if slider_id <= 8 then
+          seqnum = 1; mod = 0
+	else
+          seqnum = 2; mod = -8
+	end
+        as(seqnum).vals[slider_id+mod] = d.val
 end
 
-function enc(n,d) 
+function enc(n,d)
 	screen_dirty = true
 	grid_dirty = true
 	local t = n-1
 	if		n == 1 then
-		params:delta('gate_len_'..shift and 1 or 2)
+		params:delta('gate_len_'..(shift and 1 or 2), d)
 	elseif	in_range(n,2,3) then
 		if shift then
 			params:delta('division_'..t,d)
@@ -168,11 +162,11 @@ function g.key(x,y,z)
 		local t = x <= 8 and 1 or 2
 		local mod = t == 2 and -8 or 0
 		local selector = params:get('selector')
-		local selx = 0; local sely = 0 
+		local selx = 0; local sely = 0
 		if 	selector == 1
 		or	(selector == 2 and t == 1)
 		or 	(selector == 3 and t == 2)
-		then 
+		then
 			--as(t).repeats[x+mod] = 5 - y
 			if y <= 4 then
 				as(t).repeats[x+mod] = 5 - y
