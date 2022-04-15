@@ -35,12 +35,13 @@ sempra contains a bank of 16 phrases. the 2 identical tracks run in parallel, ea
 * k1: shift key
 * k2: enter selection mode for track 1
 * k3: enter selection mode for track 2
-* enc1: nothing
+* enc1: gate length for track 1
+* shift + enc1: gate length for track 2
 * enc2: change phrase length for track 1
 * shift + enc2: change clock division for track 1
 * enc3: change phrase lenth for track 2
 * * shift + enc3: change clock division for track 2
-* enc4 (fates only): nothing
+* enc4 (fates only): gate length for track 2
 
 ## selecting phrases
 pressing k2 or k3 opens the selector pane for tracks 1 and 2 respectively. in this mode, the opposite track is covered up by a 4x4 grid of phrases to choose from. pressing any phrase assigns it to the track. when you do, the selector pane will disappear again.
