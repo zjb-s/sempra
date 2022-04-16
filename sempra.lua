@@ -2,7 +2,7 @@
 -- v1.0.1 @zbs
 -- https://llllllll.co/t/54492
 -- grid + 16n required
--- explore polymeter
+-- explore polymeters
 
 
 g = grid.connect()
@@ -28,7 +28,7 @@ function init()
 			vals = {64,64,64,64,64,64,64,64}
 		,	trig_modes = {2,2,2,2,2,2,2,2}
 		,	repeats = {1,1,1,1,1,1,1,1}
-		,	len = 1
+		,	len = 3
 		})
 	end
     clock.run(stepper)
@@ -93,24 +93,38 @@ function stepper()
         grid_dirty = true
 		screen_dirty = true
 		for t=1,2 do
+			-- if we're under the track's clock division, tick the clock counter.
 			if math.abs(params:get('division_'..t)) > params:get('clock_counter_'..t) then
-				params:delta('clock_counter_'..t,1)
+				params:delta('clock_counter_'..t,1) 
+			
 			else
+				-- otherwise, tick the sequence.
 				params:set('clock_counter_'..t,1)
 				params:delta('step_counter_'..t,1)
 				if params:get('step_counter_'..t) > as(t).repeats[params:get('pos_'..t)] then
 					params:set('step_counter_'..t,1)
 					params:delta('pos_'..t,1)
 				end
-				if (params:get('pos_'..t) > as(t).len) then params:set('pos_'..t,1) end
+
+				-- if we're at the end of the sequence, check if there's one queued - if so, go to that one.
+				if (params:get('pos_'..t) > as(t).len) then 
+					params:set('pos_'..t,1)
+					if params:get('qd_'..t) ~= 0 then
+						params:set('as_'..t,params:get('qd_'..t))
+						params:set('qd_'..t,0)
+					end
+				end
 				if	(as(t).trig_modes[params:get('pos_'..t)] ~= 1 and	params:get('step_counter_'..t) == 1)
 				or	(as(t).trig_modes[params:get('pos_'..t)] == 3 and	params:get('step_counter_'..t) > 1)
 				then
 					local note = as(t).vals[params:get('pos_'..t)]
-					note = note + params:get('transpose_'..t)
 					note = util.linlin(0, 127, 0, params:get('range_'..t), note)
+					note = note + params:get('transpose_'..t)
+					local other_track = t == 1 and 2 or 1
+					if params:get('output_'..other_track) == 30 + t then
+						note = note + as(other_track).vals[params:get('pos_'..other_track)]
+					end
 					note = mu.snap_note_to_array(note,mu.generate_scale(params:get('root_'..t),params:get('scale_'..t),10))
-
 					local out = params:get('output_'..t)
 					local trigmode = as(t).trig_modes[params:get('pos_'..t)]
 					local len = params:get('gate_len_'..t)
@@ -190,7 +204,8 @@ function g.key(x,y,z)
 			sely = util.round_up(y/2)
 			t = t == 1 and 2 or 1
 			print('selected sequence '..selx+(sely-1)*4 .. ' on track ' .. t)
-			params:set('as_'..t, selx+(sely-1)*4)
+			if params:get('quantize') == 0 then params:set('as_'..t, selx+(sely-1)*4)
+			else params:set('qd_'..t, selx+(sely-1)*4) end
 			if shift and params:get('selector') ~= 1 then params:set('latch_'..t,1) end
 			if params:get('latch_'..t) == 0 then params:set('selector',1) end
 		end
