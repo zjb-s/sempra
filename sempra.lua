@@ -1,3 +1,10 @@
+-- sempra
+-- v1.0.1 @zbs
+-- https://llllllll.co/t/54492
+-- grid + 16n required
+-- explore polymeter
+
+
 g = grid.connect()
 param_initalizer = include('lib/params')
 render = include('lib/render')
