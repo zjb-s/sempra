@@ -50,6 +50,15 @@ function o.go()
 	,	options =	{'off', 'sequence 1', 'sequence 2'}
 	,	default	=	1
 	}
+	params:add{
+		type	=	'number'
+	,	id		=	'quantize'
+	,	name	=	'phrase switch'
+	,	min		=	0
+	,	max		=	1
+	,	default	=	0
+	,	formatter = function(v) return (v.value==1 and 'at end' or 'immediately') end
+	}
 	for i=1,2 do
 		params:add_separator('track ' .. i)
 		params:add{
@@ -77,6 +86,14 @@ function o.go()
 		,	behavior = 	'toggle'
 		}
 		params:hide(params.lookup['latch_'..i])
+		params:add{
+			type	=	'number'
+		,	id		=	'qd_'..i
+		,	name	=	'queued sequence'
+		,	min		=	0
+		,	max		=	16
+		,	default	=	0
+		}
 		params:add{
 			type 	=	'option'
 		,	id		=	'output_'..i
