@@ -1,30 +1,3 @@
-## Sempra
-
-a continuous dynamic melody sequencer for grid+16n
-
-https://www.youtube.com/watch?v=ylj5nLv6IEg
-
-
-### Requirements
-
-* grid
-* 16n or other controller
-### Optional
-* crow
-* midi voice
-* just friends
-* w/
-
-### Roadmap
-* crow envelope outs
-* copy and paste sequences
-* clock multiplication
-* slides
-* save sequences
-* arc support
-* an engine
-* visual representation of gate length
-
 # sempra
 dynamic melody sequencer
 
@@ -36,8 +9,6 @@ dynamic melody sequencer
 a dynamic melody sequencer for norns, 16n and a varibright grid 128. there is no engine built in - to hear sound, connect norns to midi, crow, w/syn and/or just friends.
 
 two sequencers run in parallel, each with up to 8 steps. swap out phrases from a shared bank on the fly, edit durations and repeats per step, combine sequences together in modular for awake-style phasing.
-
-inspired by metropolis, kria, awake, er-101, m18s and skylines.
 
 # how do i use this?
 
@@ -87,7 +58,7 @@ pressing k2 or k3 opens the selector pane for tracks 1 and 2 respectively. in th
 * to latch the selector pane, hold shift while selecting a phrase. press k2/k3 to unlatch.
 * to exit the selector pane without selecting anything, press k2/k3 again, or press the currently selected phrase (much brighter than the others)
 
-all changes to the previous phrase are automatically saved and can be returned to instantly at any time. phrases are either switched to immediately, or queued to start when the current phrase ends - change this behavior in the params global section.
+phrase are selected immediately when you press them. all changes to the previous phrase are automatically saved and can be returned to instantly at any time.
 
 ## params
 
@@ -96,11 +67,13 @@ each track has a few params in the norns menu that you can't access from the mai
 * transpose: transpose the track (not phrase) by x semitones.
 * output: sets the track output. sempra currently supports crow, w/syn, just friends and midi gear. you can also route a track to transpose another. (not implemented)
 
-
-### Download
-
-v1.0.3 - `;install https://github.com/zjb-s/sempra`
-
-https://github.com/zjb-s/sempra/tree/main
-
-this is my first fully-documented, full-release norns script! woohoo! let me know if anything is broken and i'll fix it asap. PRs and feature requests are more than welcome.
+# roadmap
+* implement midi out
+* track transpose other track
+* crow envelope outs
+* copy and paste sequences
+* clock multiplication
+* phrase switch quantization
+* slides
+* save sequences
+* arc support

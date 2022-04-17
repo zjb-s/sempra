@@ -151,10 +151,20 @@ function stepper()
     end
 end
 
-function value_change(seqnum,which_fader,value)
-	as(seqnum).vals[which_fader] = value
+function value_change(seqnum,step,value)
+	as(seqnum).vals[step] = value
+	screen_dirty = true
 end
 
+function faderbank_event(d)
+    local slider_id = _16n.cc_2_slider_id(d.cc)
+	local seqnum = (slider_id <= 8) and 1 or 2
+	local val = d.val
+	local step = slider_id
+	if seqnum == 2 then step = step - 8 end
+	--print('step+mod: '..step)
+	value_change(seqnum,step,val)
+end
 
 function m.event(data)
 	local d = midi.to_msg(data)
@@ -163,35 +173,10 @@ function m.event(data)
 	local val = 64
 	if d.type == 'cc' then 
 		seqnum = (d.cc <= 8) and 1 or 2
-		step = d.cc % 8
+		step = d.cc % 9
 		val = d.val
 		value_change(seqnum,step,val)
 	end
-end
-
-function faderbank_event(d)
-	screen_dirty = true
-    local slider_id = _16n.cc_2_slider_id(d.cc)
-	local seqnum = (slider_id <= 8) and 1 or 2
-	if slider_id <= 8 then 
-		mod = 0
-	else
-		mod = -8
-	end
-	local val = d.val
-	local step = slider_id+mod
-	value_change(seqnum,step+mod,val)
-
-	-- local seqnum; local mod
-	-- local slider_id = _16n.cc_2_slider_id(d.cc)
-	-- if slider_id <= 8 then
-    --       seqnum = 1; mod = 0
-	-- else
-    --       seqnum = 2; mod = -8
-	-- end
-    -- as(seqnum).vals[slider_id+mod] = d.val
-	-- norns.crow.public.lookup('faders').val[slider_id+mod] =
-	-- todo finish crow public implementation
 end
 
 function enc(n,d)
