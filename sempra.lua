@@ -155,6 +155,7 @@ function value_change(seqnum,which_fader,value)
 	as(seqnum).vals[which_fader] = value
 end
 
+
 function m.event(data)
 	local d = midi.to_msg(data)
 	local seqnum = 1
