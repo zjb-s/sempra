@@ -35,6 +35,7 @@ output_options = {
 ,	'transpose sequence 1'
 ,	'transpose sequence 2'
 }
+-- todo allow only one transpose option per track - transposing yourself doesn't do much!
 
 scale_table = {}
 for i=1,#mu.SCALES do
@@ -49,6 +50,15 @@ function o.go()
 	,	name	=	'selector pane'
 	,	options =	{'off', 'sequence 1', 'sequence 2'}
 	,	default	=	1
+	}
+	params:add{
+		type	=	'number'
+	,	id		=	'quantize'
+	,	name	=	'phrase switch'
+	,	min		=	0
+	,	max		=	1
+	,	default	=	0
+	,	formatter = function(v) return (v.value==1 and 'at end' or 'immediately') end
 	}
 	for i=1,2 do
 		params:add_separator('track ' .. i)
@@ -78,11 +88,27 @@ function o.go()
 		}
 		params:hide(params.lookup['latch_'..i])
 		params:add{
+			type	=	'number'
+		,	id		=	'qd_'..i
+		,	name	=	'queued sequence'
+		,	min		=	0
+		,	max		=	16
+		,	default	=	0
+		}
+		params:hide(params.lookup['qd_'..i])
+		params:add{
 			type 	=	'option'
 		,	id		=	'output_'..i
 		,	name	=	'output'
 		,	options	=	output_options
 		,	default	=	i==1 and 29 or 30
+		}
+		params:add{
+			type	=	'option'
+		,	id		=	'device_'..i
+		,	name	=	'midi out device'
+		,	options	=	midi_device_names
+		,	default = 	1
 		}
 		params:add{
 			type	=	'number'
@@ -97,9 +123,8 @@ function o.go()
 		,	id		=	'pos_'..i
 		,	name	=	'position'
 		,	min		=	1
-		,	max		=	8
+		,	max		=	9
 		,	default	=	1
-		,	wrap	=	true -- important!
 		}
 		params:hide(params.lookup['pos_'..i])
 		params:add{
