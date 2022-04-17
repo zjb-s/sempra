@@ -2,9 +2,10 @@
 -- v1.0.1 @zbs
 -- https://llllllll.co/t/54492
 -- grid + 16n required
--- explore polymeter
+-- explore polymeters
 
-
+midi_device = {}
+midi_device_names = {}
 g = grid.connect()
 param_initalizer = include('lib/params')
 render = include('lib/render')
@@ -20,15 +21,22 @@ faders = {}
 
 
 function init()
+    _16n.init(faderbank_event)
+	for i = 1,#midi.vports do -- query all ports
+		midi_device[i] = midi.connect(i) -- connect each device
+		local full_name = 
+		table.insert(midi_device_names,i..": "..util.trim_string_to_width(midi_device[i].name,40)) -- register its name
+	end
 	param_initalizer.go()
-        _16n.init(faderbank_event)
+
+	norns.crow.loadscript('sempra_crow.lua')
 
     for i=1,16 do
 		table.insert(sequences, {
 			vals = {64,64,64,64,64,64,64,64}
 		,	trig_modes = {2,2,2,2,2,2,2,2}
 		,	repeats = {1,1,1,1,1,1,1,1}
-		,	len = 1
+		,	len = 3
 		})
 	end
     clock.run(stepper)
@@ -47,12 +55,19 @@ function in_range(n, min, max)
 	end
 end
 
-function play_note(note,out,trigmode,len)
+function play_note(track,note,out,trigmode,len)
 	-- todo implement note duration for ii voices
 	note = note / 12
 	local velocity = 10
 	if 		out <= 16 then -- midi out
-		-- todo implement midi out
+		-- todo refine midi out implementation
+		local n = note * 12
+		local v = util.linlin(0,10,0,127,velocity)
+		local o = out
+		local dev = midi_device[params:get('device_'..track)]
+		dev:note_on(n,v,o)
+		clock.sleep(len/1000)
+		dev:note_off(n,v,o)
 	elseif	in_range(out,17,20) then 				-- wsyn mono
 		crow.ii.wsyn.ar_mode(1)
 		crow.ii.wsyn.play_voice(out-16,note,velocity)
@@ -93,44 +108,83 @@ function stepper()
         grid_dirty = true
 		screen_dirty = true
 		for t=1,2 do
+			-- if we're under the track's clock division, tick the clock counter.
 			if math.abs(params:get('division_'..t)) > params:get('clock_counter_'..t) then
-				params:delta('clock_counter_'..t,1)
+				params:delta('clock_counter_'..t,1) 
+			
 			else
+				-- otherwise, tick the sequence.
 				params:set('clock_counter_'..t,1)
 				params:delta('step_counter_'..t,1)
 				if params:get('step_counter_'..t) > as(t).repeats[params:get('pos_'..t)] then
 					params:set('step_counter_'..t,1)
 					params:delta('pos_'..t,1)
 				end
-				if (params:get('pos_'..t) > as(t).len) then params:set('pos_'..t,1) end
+
+				-- if we're at the end of the sequence, check if there's one queued - if so, go to that one.
+				if (params:get('pos_'..t) > as(t).len) then 
+					params:set('pos_'..t,1)
+					if params:get('qd_'..t) ~= 0 then
+						params:set('as_'..t,params:get('qd_'..t))
+						params:set('qd_'..t,0)
+					end
+				end
 				if	(as(t).trig_modes[params:get('pos_'..t)] ~= 1 and	params:get('step_counter_'..t) == 1)
 				or	(as(t).trig_modes[params:get('pos_'..t)] == 3 and	params:get('step_counter_'..t) > 1)
 				then
 					local note = as(t).vals[params:get('pos_'..t)]
-					note = note + params:get('transpose_'..t)
 					note = util.linlin(0, 127, 0, params:get('range_'..t), note)
+					note = note + params:get('transpose_'..t)
+					local other_track = t == 1 and 2 or 1
+					if params:get('output_'..other_track) == 30 + t then
+						note = note + as(other_track).vals[params:get('pos_'..other_track)]
+					end
 					note = mu.snap_note_to_array(note,mu.generate_scale(params:get('root_'..t),params:get('scale_'..t),10))
-
 					local out = params:get('output_'..t)
 					local trigmode = as(t).trig_modes[params:get('pos_'..t)]
 					local len = params:get('gate_len_'..t)
-					clock.run(play_note,note,out,trigmode,len)
+					clock.run(play_note,t,note,out,trigmode,len)
 				end
 			end
 		end
     end
 end
 
+function value_change(seqnum,which_fader,value)
+	as(seqnum).vals[which_fader] = value
+end
+
+-- function midi.event(data)
+-- 	local d = midi.to_msg(data)
+-- 	local seqnum = 1
+-- 	local step = 1
+-- 	local val = 64
+-- 	if d.type == 'cc' then 
+-- 		seqnum = (d.cc <= 8) and 1 or 2
+-- 		step = d.cc % 8
+-- 		val = d.val
+-- 		value_change(seqnum,step,val)
+-- 	end
+-- end
+
 function faderbank_event(d)
 	screen_dirty = true
     local slider_id = _16n.cc_2_slider_id(d.cc)
-	local seqnum; local mod
-	if slider_id <= 8 then
-          seqnum = 1; mod = 0
-	else
-          seqnum = 2; mod = -8
-	end
-        as(seqnum).vals[slider_id+mod] = d.val
+	local seqnum = (slider_id <= 8) and 1 or 2
+	local step = (slider_id % 8)
+	local val = d.val
+	value_change(seqnum,step,val)
+
+	-- local seqnum; local mod
+	-- local slider_id = _16n.cc_2_slider_id(d.cc)
+	-- if slider_id <= 8 then
+    --       seqnum = 1; mod = 0
+	-- else
+    --       seqnum = 2; mod = -8
+	-- end
+    -- as(seqnum).vals[slider_id+mod] = d.val
+	-- norns.crow.public.lookup('faders').val[slider_id+mod] =
+	-- todo finish crow public implementation
 end
 
 function enc(n,d)
@@ -190,7 +244,8 @@ function g.key(x,y,z)
 			sely = util.round_up(y/2)
 			t = t == 1 and 2 or 1
 			print('selected sequence '..selx+(sely-1)*4 .. ' on track ' .. t)
-			params:set('as_'..t, selx+(sely-1)*4)
+			if params:get('quantize') == 0 then params:set('as_'..t, selx+(sely-1)*4)
+			else params:set('qd_'..t, selx+(sely-1)*4) end
 			if shift and params:get('selector') ~= 1 then params:set('latch_'..t,1) end
 			if params:get('latch_'..t) == 0 then params:set('selector',1) end
 		end
