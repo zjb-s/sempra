@@ -9,6 +9,7 @@ function o.screen(as_proxies)
 		for i=1,8 do
 			local x = i * 7 + mod
 			local line_len = util.linlin(0,127,0,45,as_proxies[t].vals[i])
+			-- local line_len = util.linlin(0,127,0,45,params:get('step_'..i+(t-1)*8))
 			screen.move(x,48)
 			screen.line_width(4)
 			screen.level(i <= as_proxies[t].len and 10 or 2)

@@ -22,16 +22,15 @@ faders = {}
 
 
 function init()
-    _16n.init(faderbank_event)
+	_16n.init(faderbank_event)
+	print('initialized 16n')
 	for i = 1,#midi.vports do -- query all ports
 		midi_device[i] = midi.connect(i) -- connect each device
 		local full_name = 
 		table.insert(midi_device_names,i..": "..util.trim_string_to_width(midi_device[i].name,40)) -- register its name
 	end
 	param_initalizer.go()
-
 	norns.crow.loadscript('sempra_crow.lua')
-
     for i=1,16 do
 		table.insert(sequences, {
 			vals = {64,64,64,64,64,64,64,64}
@@ -126,8 +125,9 @@ function stepper()
 				if (params:get('pos_'..t) > as(t).len) then 
 					params:set('pos_'..t,1)
 					if params:get('qd_'..t) ~= 0 then
-						params:set('as_'..t,params:get('qd_'..t))
-						params:set('qd_'..t,0)
+						launch(t)
+						-- params:set('as_'..t,params:get('qd_'..t))
+						-- params:set('qd_'..t,0)
 					end
 				end
 				if	(as(t).trig_modes[params:get('pos_'..t)] ~= 1 and	params:get('step_counter_'..t) == 1)
@@ -151,32 +151,29 @@ function stepper()
     end
 end
 
+function launch(t,seq)
+	local p = (seq==nil) and params:get('qd_'..t) or seq
+	params:set('as_'..t,p)
+	params:set('qd_'..t,0)
+	for i=1,8 do
+		mod = (t-1)*8
+		params:set('step_'..i+mod,as(t).vals[i])
+	end
+end
+
 function value_change(seqnum,step,value)
 	as(seqnum).vals[step] = value
 	screen_dirty = true
 end
 
 function faderbank_event(d)
+	--print('faderbank event')
     local slider_id = _16n.cc_2_slider_id(d.cc)
 	local seqnum = (slider_id <= 8) and 1 or 2
 	local val = d.val
 	local step = slider_id
 	if seqnum == 2 then step = step - 8 end
-	--print('step+mod: '..step)
 	value_change(seqnum,step,val)
-end
-
-function m.event(data)
-	local d = midi.to_msg(data)
-	local seqnum = 1
-	local step = 1
-	local val = 64
-	if d.type == 'cc' then 
-		seqnum = (d.cc <= 8) and 1 or 2
-		step = d.cc % 9
-		val = d.val
-		value_change(seqnum,step,val)
-	end
 end
 
 function enc(n,d)
@@ -224,7 +221,6 @@ function g.key(x,y,z)
 		or	(selector == 2 and t == 1)
 		or 	(selector == 3 and t == 2)
 		then
-			--as(t).repeats[x+mod] = 5 - y
 			if y <= 4 then
 				as(t).repeats[x+mod] = 5 - y
 			elseif y >= 5 then
@@ -236,10 +232,17 @@ function g.key(x,y,z)
 			sely = util.round_up(y/2)
 			t = t == 1 and 2 or 1
 			print('selected sequence '..selx+(sely-1)*4 .. ' on track ' .. t)
-			if params:get('quantize') == 0 then params:set('as_'..t, selx+(sely-1)*4)
-			else params:set('qd_'..t, selx+(sely-1)*4) end
-			if shift and params:get('selector') ~= 1 then params:set('latch_'..t,1) end
-			if params:get('latch_'..t) == 0 then params:set('selector',1) end
+			if params:get('quantize') == 0 then 
+				launch(t,selx+(sely-1)*4)
+			else 
+				params:set('qd_'..t, selx+(sely-1)*4) 
+			end
+			if shift and params:get('selector') ~= 1 then
+				params:set('latch_'..t,1)
+			end
+			if params:get('latch_'..t) == 0 then
+				params:set('selector',1)
+			end
 		end
     end
 end

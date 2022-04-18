@@ -44,6 +44,20 @@ end
 
 function o.go()
 	params:add_separator('global')
+	params:add_group('mappings',16)
+	for i=1,16 do
+		params:add{
+			type	=	'number'
+		,	id		=	'step_'..i
+		,	name	=	'value '..i
+		,	min		=	0
+		,	max		=	127
+		,	default	=	64
+		,	action = function(x)
+				value_change(i<=8 and 1 or 2, util.wrap(i,1,16),x)
+			end
+		}
+	end
 	params:add{
 		type	=	'option'
 	,	id 		=	'selector'
@@ -191,5 +205,6 @@ function o.go()
 	end
 end
 
-_menu.rebuild_params()
+--_menu.rebuild_params()
+-- this was cauing problems, i don't think i need it
 return o
