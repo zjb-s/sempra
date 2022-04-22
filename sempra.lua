@@ -1,5 +1,5 @@
 -- sempra
--- v1.0.1 @zbs
+-- v1.0.5 @zbs
 -- https://llllllll.co/t/54492
 -- grid + 16n required
 -- explore polymeters
@@ -37,6 +37,7 @@ function init()
 		,	trig_modes = {2,2,2,2,2,2,2,2}
 		,	repeats = {1,1,1,1,1,1,1,1}
 		,	len = 3
+		,	lock = false
 		})
 	end
     clock.run(stepper)
@@ -162,7 +163,9 @@ function launch(t,seq)
 end
 
 function value_change(seqnum,step,value)
-	as(seqnum).vals[step] = value
+	if not as(seqnum).lock then
+		as(seqnum).vals[step] = value
+	end
 	screen_dirty = true
 end
 
@@ -181,7 +184,11 @@ function enc(n,d)
 	grid_dirty = true
 	local t = n-1
 	if		n == 1 then
-		params:delta('gate_len_'..(shift and 2 or 1), d)
+		if params:get('enc1') == 1 then
+			params:delta('gate_len_'..(shift and 2 or 1), d)
+		elseif params:get('enc1') == 2 then
+			as(shift and 2 or 1).lock = (d > 0)
+		end
 	elseif	in_range(n,2,3) then
 		if shift then
 			params:delta('division_'..t,d)
@@ -189,7 +196,11 @@ function enc(n,d)
 			as(t).len = util.clamp(as(t).len + d,1,8)
 		end
 	elseif	n == 4 then
-		params:delta('gate_len_2',d)
+		if params:get('enc1') == 1 then
+			params:delta('gate_len_2',d)
+		elseif params:get('enc1') == 2 then
+			as(2).lock = (d > 0)
+		end
 	end
 end
 

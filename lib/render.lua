@@ -29,7 +29,8 @@ function o.screen(as_proxies)
 		screen.move(mod+15,61)
 		screen.text('s'..params:get('as_'..t))
 		screen.move(mod+30,61)
-		if params:get('latch_'..t) == 1 then screen.text('latched') end
+		-- if params:get('latch_'..t) == 1 then screen.text('latched') end
+		if as_proxies[t].lock then screen.text('locked') end
 	end
 	screen.update()
 	screen_dirty = false

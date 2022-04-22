@@ -66,13 +66,17 @@ function o.go()
 	,	default	=	1
 	}
 	params:add{
-		type	=	'number'
+		type	=	'option'
 	,	id		=	'quantize'
 	,	name	=	'phrase switch'
-	,	min		=	0
-	,	max		=	1
-	,	default	=	0
-	,	formatter = function(v) return (v.value==1 and 'at end' or 'immediately') end
+	,	options	=	{'at end', 'immediately'}
+	,	default =	1
+	}
+	params:add{
+		type	=	'option'
+	,	id		=	'enc1'
+	,	name	=	'enc 1 behavior'
+	,	options	=	{'gate length','lock/unlock'}
 	}
 	for i=1,2 do
 		params:add_separator('track ' .. i)
