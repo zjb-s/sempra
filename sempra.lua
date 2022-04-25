@@ -16,10 +16,8 @@ function g.add() grid_dirty = true end
 grid_dirty = true
 screen_dirty = true
 shift = false
-tracks = {}
 sequences = {}
-faders = {}
-
+last_notes = {'none','none'}
 
 function init()
 	_16n.init(faderbank_event)
@@ -31,6 +29,7 @@ function init()
 	end
 	param_initalizer.go()
 	norns.crow.loadscript('sempra_crow.lua')
+	crow.input[2].change = reset
     for i=1,16 do
 		table.insert(sequences, {
 			vals = {64,64,64,64,64,64,64,64}
@@ -42,6 +41,23 @@ function init()
 	end
     clock.run(stepper)
     clock.run(redraw_timer)
+end
+
+-- function sequence_operator(which_function, t)
+-- 	if type(t)
+-- end
+
+function reset(t)
+	local function go(t)
+		params:set('pos_'..t,1)
+		params:set('clock_counter_'..t,1)
+		params:set('step_counter_'..t,1)
+	end
+	if type(t) ~= 'number' then t = 3 end
+	t = util.clamp(t,1,3)
+	print ('t is '..t)
+	if in_range(t,1,2) then go(t)
+	else go(1); go(2) end
 end
 
 function as(n)
@@ -94,12 +110,12 @@ function redraw_timer()
     clock.sleep(0.5)
     while true do
         clock.sleep(1/30)
-        if grid_dirty then render.grid({as(1),as(2)},tracks); grid_dirty = false end
+        if grid_dirty then render.grid({as(1),as(2)}); grid_dirty = false end
 		if screen_dirty then redraw() end
     end
 end
 
-function redraw() render.screen({as(1),as(2)},tracks) end
+function redraw() render.screen({as(1),as(2)},last_notes) end
 -- redraw() namespace is treated specially by norns, this makes it pause when the menu is open etc
 
 function stepper()
@@ -146,6 +162,7 @@ function stepper()
 					local trigmode = as(t).trig_modes[params:get('pos_'..t)]
 					local len = params:get('gate_len_'..t)
 					clock.run(play_note,t,note,out,trigmode,len)
+					last_notes[t] = mu.note_num_to_name(note,true)
 				end
 			end
 		end

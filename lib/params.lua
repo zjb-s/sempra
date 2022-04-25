@@ -59,6 +59,13 @@ function o.go()
 		}
 	end
 	params:add{
+		type 	=	'binary'
+	,	id		=	'reset_all'
+	,	name	=	'reset all'
+	,	behavior =	'trig'
+	,	action = function() reset(3) end
+	}
+	params:add{
 		type	=	'option'
 	,	id 		=	'selector'
 	,	name	=	'selector pane'
@@ -205,6 +212,13 @@ function o.go()
 		,	max		=	1000
 		,	default	=	5
 		,	formatter = function(n) return n.value..' ms' end
+		}
+		params:add{
+			type	=	'binary'
+		,	id		=	'reset_'..i
+		,	name	=	'reset'
+		,	behavior = 	'trig'
+		,	action 	=	function() reset(i) end
 		}
 	end
 end
