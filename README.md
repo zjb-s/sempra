@@ -71,7 +71,7 @@ each track has a few params in the norns menu that you can't access from the mai
 
 ### Download
 
-v1.0.5 - `;install https://github.com/zjb-s/sempra`
+v1.0.6 - `;install https://github.com/zjb-s/sempra`
 
 https://github.com/zjb-s/sempra/tree/main
 
