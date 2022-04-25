@@ -67,13 +67,12 @@ each track has a few params in the norns menu that you can't access from the mai
 * transpose: transpose the track (not phrase) by x semitones.
 * output: sets the track output. sempra currently supports crow, w/syn, just friends and midi gear. you can also route a track to transpose another. (not implemented)
 
-# roadmap
-* implement midi out
-* track transpose other track
-* crow envelope outs
-* copy and paste sequences
-* clock multiplication
-* phrase switch quantization
-* slides
-* save sequences
-* arc support
+
+
+### Download
+
+v1.0.5 - `;install https://github.com/zjb-s/sempra`
+
+https://github.com/zjb-s/sempra/tree/main
+
+this is my first fully-documented, full-release norns script! woohoo! let me know if anything is broken and i'll fix it asap. PRs and feature requests are more than welcome.
